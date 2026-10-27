@@ -1,3 +1,6 @@
+import AESOperationsHardVersion.java;
+
+
 /**
 * Start by implementing the AES related methods in any of the 3 provided Java files.  And then return here to test.
 * @author - Hayden Seiberlich, Ryan Shaw, & Christian Torazzo
@@ -20,5 +23,17 @@ public class TestAESOps {
 		// If you want to output multiple values with a single printf (assume they're called value1, value2, etc)
 		// then in the String that is the first parameter, you'd have formatting requirements for each as follows:
 		// System.out.printf("%02x %02x %02x %02x\n", value1, value2, value3, value4);
+		byte[] key = {
+			(byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03,
+			(byte) 0x04, (byte) 0x05, (byte) 0x06, (byte) 0x07,
+			(byte) 0x08, (byte) 0x09, (byte) 0x0A, (byte) 0x0B,
+			(byte) 0x0C, (byte) 0x0D, (byte) 0x0E, (byte) 0x0F
+		};
+
+		int[] matrix = AESOperationsHardVersion.generateKeyMatrixFromKey(key);
+
+		for (int col : matrix) {
+			System.out.printf("%08X%n", col);
+		}
 	}
 }
