@@ -107,8 +107,26 @@ public class AESOperationsHardVersion {
 		
 		// NOTE: bit-wise and is &, or is |, XOR is ^, left shifting Y by k places is Y << k, right shifting Y by k places is Y >> k
 		
-		
+		//Save original incoming matrix
+        int[] original = state.clone();
 
+        // Iterates through each column and reorganizes bytes by left shifting according to AES rules
+        for (int c = 0; c < 4; c++) {
+            // Ex: Top represents row 1
+            int top = (original[c] >>> 24) & 0xFF;
+
+            int second = (original[(c + 1) % 4] >>> 16) & 0xFF;
+
+            int third = (original[(c + 2) % 4] >>> 8) & 0xFF;
+
+            int bottom = original[(c + 3) % 4] & 0xFF;
+
+            state[c] =
+                (top << 24) |
+                (second << 16) |
+                (third << 8) |
+                bottom;
+        }
 	}
 	
 	
