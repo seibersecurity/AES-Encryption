@@ -29,9 +29,11 @@ public class TestAESOps {
 
 		int[] matrix = AESOperationsHardVersion.generateKeyMatrixFromKey(key);
 		int[] expandedMatrix = AESOperationsHardVersion.keyExpansion(matrix);
+		int[] state = { 0x193de3be, 0xa0f4e22b, 0x9ac68d2a, 0xe9f84808 };
 
-		for (int col : expandedMatrix) {
-			System.out.printf("%08X%n", col);
+		AESOperationsHardVersion.byteSubstitution(state);
+		for (int col : state) {
+			System.out.printf("%08X%n", col);		
 		}
 	}
 }

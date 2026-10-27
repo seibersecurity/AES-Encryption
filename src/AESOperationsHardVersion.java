@@ -5,7 +5,14 @@
  */
 
 public class AESOperationsHardVersion {
+	// HINT 1:  I'd recommend simply hardcoding the S-box as a 1 dimensional array of bytes as a field within this class.
+	// If you use this hint, then you'd convert the 2D S-box to a simple array, by starting with the first row, followed by the 2nd, etc.
+	// Just Google AES S-box to find it, such as on the wikipedia page.  The input byte is then simply used as an index into this array.
 
+	// HINT 2: You'll probably find the S-box elements specified in hexadecimal.  You don't need to convert from hexadecimal to decimal
+	// in using HINT 1.  If you weren't already aware, in Java you can specify integer values with hex, by using 0x.  For example, 0x2a
+	// is how you'd specify the decimal value 42 in hexadecimal.
+	
 	private static final byte[] S_BOX = {
 			(byte) 0x63, (byte) 0x7C, (byte) 0x77, (byte) 0x7B, (byte) 0xF2, (byte) 0x6B, (byte) 0x6F, (byte) 0xC5,
 			(byte) 0x30, (byte) 0x01, (byte) 0x67, (byte) 0x2B, (byte) 0xFE, (byte) 0xD7, (byte) 0xAB, (byte) 0x76,
@@ -62,35 +69,29 @@ public class AESOperationsHardVersion {
 	* @param state The current state matrix implemented as 1 dimensional array of ints of length 4. This method modifies this matrix by replacing each byte
 	* of each int with the corresponding output from the AES s-box.
 	*/
-	public static void byteSubstitution(int[] state) {
-		// HINT 1:  I'd recommend simply hardcoding the S-box as a 1 dimensional array of bytes as a field within this class.
-		// If you use this hint, then you'd convert the 2D S-box to a simple array, by starting with the first row, followed by the 2nd, etc.
-		// Just Google AES S-box to find it, such as on the wikipedia page.  The input byte is then simply used as an index into this array.
-		
-
-
-		// HINT 2: You'll probably find the S-box elements specified in hexadecimal.  You don't need to convert from hexadecimal to decimal
-		// in using HINT 1.  If you weren't already aware, in Java you can specify integer values with hex, by using 0x.  For example, 0x2a
-		// is how you'd specify the decimal value 42 in hexadecimal.
-		
-
-
+	public static void byteSubstitution(int[] state) {	
 		// HINT 3: Reminder, when you initialize an array in Java, you can do so by specifying a list of elements within { }.
 		// For example, consider the following:
 		//   byte[] someBytes = { 0x2a, 0x33, 0x41 };
 		// In this example, someBytes is initialized to an array of length 3, with the specific values specified in hexadecimal.
 		// If you follow HINT 1, you'd have something like this as a field outside this method for the entire S-box.
 		
-
-
 		// HINT SPECIFIC TO HARD VERSION:
 		// You'll need to figure out how to get each of the 4 byte values from each int, as well as how to reassemble the results
 		// as ints.  To get your index into your SBox, casting state[i] to type byte will give you the least significant 8 bits, which
 		// you can then use as an index into your SBox to get the replacement bits for that byte.  You can use a combination of a right-shift
 		// by 8 positions and a cast to type byte to get the next byte, etc.
 		
-		
+		for (int i = 0; i < 4; i++) {
+			int b0 = S_BOX[(state[i] >>> 24) & 0xFF] & 0xFF; // top row
+			int b1 = S_BOX[(state[i] >>> 16) & 0xFF] & 0xFF;
+			int b2 = S_BOX[(state[i] >>>  8) & 0xFF] & 0xFF;
+			int b3 = S_BOX[ state[i]         & 0xFF] & 0xFF; // bottom row
 
+			state[i] = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3;
+		}
+
+		
 	}
 	
 
