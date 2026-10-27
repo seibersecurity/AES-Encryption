@@ -132,24 +132,41 @@ public class AESOperationsHardVersion {
 	
 	
 	/**
-	* Computes the mix columns step of an AES round.
-	*
-	* @param state The current state matrix implemented as 1 dimensional array of ints of length 4. 
-	* This method modifies this matrix to contain the result of the mix columns step.
-	*  Each int in this array is a column (NOT a row).
-	*/
-	public static void mixColumns(int[] state) {
-		// Some of the hints in the easier versions of this may be helpful (specifically the hints in AESOperations.java, but you'll also need
-		// to figure out the shifts and bit-wise operations that you need.
-		
-		// NOTE: bit-wise and is &, or is |, XOR is ^, left shifting Y by k places is Y << k, right shifting Y by k places with sign extension is Y >> k,
-		// unsigned right shift of Y by k places Y >>> k.  If you use >> the new bit at the right most end will depend on sign (1 for negative and 0 for
-		// positive).  So be careful, if you need to right shift, you'll probably want the unsigned >>> where the new right most bit will be a 0 always.
+    * Computes the mix columns step of an AES round.
+    *
+    * @param state The current state matrix implemented as 1 dimensional array of ints of length 4. 
+    * This method modifies this matrix to contain the result of the mix columns step.
+    *  Each int in this array is a column (NOT a row).
+    */
+    public static void mixColumns(int[] state) {
+        // Iterate through each column to perform mixed column operation
+        for (int c = 0; c < 4; c++) {
+            // Extract bytes from current column c
+            int a0 = (state[c] >>> 24) & 0xFF;
+            int a1 = (state[c] >>> 16) & 0xFF;
+            int a2 = (state[c] >>> 8) & 0xFF;
+            int a3 = state[c] & 0xFF;
 
+            // Multiply each byte by 2 using AES arithmetic
+            int x0 = ((a0 << 1) ^ ((a0 & 0x80) != 0 ? 0x11B : 0)) & 0xFF;
+            int x1 = ((a1 << 1) ^ ((a1 & 0x80) != 0 ? 0x11B : 0)) & 0xFF;
+            int x2 = ((a2 << 1) ^ ((a2 & 0x80) != 0 ? 0x11B : 0)) & 0xFF;
+            int x3 = ((a3 << 1) ^ ((a3 & 0x80) != 0 ? 0x11B : 0)) & 0xFF;
 
+            // Calculate the output bytes
+            int b0 = x0 ^ (x1 ^ a1) ^ a2 ^ a3;
+            int b1 = a0 ^ x1 ^ (x2 ^ a2) ^ a3;
+            int b2 = a0 ^ a1 ^ x2 ^ (x3 ^ a3);
+            int b3 = (x0 ^ a0) ^ a1 ^ a2 ^ x3;
 
-
-	}
+            // Reassemble the column
+            state[c] =
+                (b0 << 24) |
+                (b1 << 16) |
+                (b2 << 8) |
+                b3;
+        }
+    }
 	
 	
 	/**
