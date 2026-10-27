@@ -4,7 +4,39 @@
 */
 
 public class TestAESOps {
-	
+
+	// AddRoundKey: XOR each state column with the matching column of the round key
+    private static void addRoundKey(int[] state, int[] expandedKey, int round) {
+        for (int c = 0; c < 4; c++) {
+            state[c] ^= expandedKey[round * 4 + c];
+        }
+    }
+
+	public static int[] encrypt(byte[] plaintext, byte[] key) {
+		int[] expandedKey = AESOperationsHardVersion.keyExpansion(
+                AESOperationsHardVersion.generateKeyMatrixFromKey(key));
+		
+		int[] state = AESOperationsHardVersion.generateKeyMatrixFromKey(plaintext);
+
+		// Initial round
+        addRoundKey(state, expandedKey, 0);
+
+		// Rounds 1-9
+        for (int round = 1; round <= 9; round++) {
+            AESOperationsHardVersion.byteSubstitution(state);
+            AESOperationsHardVersion.shiftRows(state);
+            AESOperationsHardVersion.mixColumns(state);
+            addRoundKey(state, expandedKey, round);
+        }
+
+        // Final round
+        AESOperationsHardVersion.byteSubstitution(state);
+        AESOperationsHardVersion.shiftRows(state);
+        addRoundKey(state, expandedKey, 10);
+
+        return state;
+	}
+
 	public static void main(String[] args) {
 		
 		// Write some code to test your various methods.
@@ -20,6 +52,14 @@ public class TestAESOps {
 		// If you want to output multiple values with a single printf (assume they're called value1, value2, etc)
 		// then in the String that is the first parameter, you'd have formatting requirements for each as follows:
 		// System.out.printf("%02x %02x %02x %02x\n", value1, value2, value3, value4);
+
+		byte[] plaintext = {
+			(byte) 0x4D, (byte) 0x65, (byte) 0x65, (byte) 0x74,   // M e e t
+			(byte) 0x20, (byte) 0x6D, (byte) 0x65, (byte) 0x20,   // (space) m e (space)
+			(byte) 0x61, (byte) 0x74, (byte) 0x20, (byte) 0x6E,   // a t (space) n
+			(byte) 0x6F, (byte) 0x6F, (byte) 0x6E, (byte) 0x2E    // o o n .
+		};
+
 		byte[] key = {
 			(byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03,
 			(byte) 0x04, (byte) 0x05, (byte) 0x06, (byte) 0x07,
@@ -27,13 +67,12 @@ public class TestAESOps {
 			(byte) 0x0C, (byte) 0x0D, (byte) 0x0E, (byte) 0x0F
 		};
 
-		int[] matrix = AESOperationsHardVersion.generateKeyMatrixFromKey(key);
-		int[] expandedMatrix = AESOperationsHardVersion.keyExpansion(matrix);
-		int[] state = { 0x193de3be, 0xa0f4e22b, 0x9ac68d2a, 0xe9f84808 };
+		int[] ciphertext = encrypt(plaintext, key);
 
-		AESOperationsHardVersion.byteSubstitution(state);
-		for (int col : state) {
-			System.out.printf("%08X%n", col);		
+		System.out.println("Plaintext:  " + new String(plaintext));
+		System.out.print("Ciphertext: ");
+		for (int col : ciphertext) {
+			System.out.printf("%08X", col);
 		}
 	}
 }
