@@ -1,6 +1,3 @@
-import AESOperationsHardVersion.java;
-
-
 /**
 * Start by implementing the AES related methods in any of the 3 provided Java files.  And then return here to test.
 * @author - Hayden Seiberlich, Ryan Shaw, & Christian Torazzo
@@ -31,8 +28,9 @@ public class TestAESOps {
 		};
 
 		int[] matrix = AESOperationsHardVersion.generateKeyMatrixFromKey(key);
+		int[] expandedMatrix = AESOperationsHardVersion.keyExpansion(matrix);
 
-		for (int col : matrix) {
+		for (int col : expandedMatrix) {
 			System.out.printf("%08X%n", col);
 		}
 	}

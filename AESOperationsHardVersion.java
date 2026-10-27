@@ -41,6 +41,21 @@ public class AESOperationsHardVersion {
 			(byte) 0x41, (byte) 0x99, (byte) 0x2D, (byte) 0x0F, (byte) 0xB0, (byte) 0x54, (byte) 0xBB, (byte) 0x16
 	};
 
+	private static final int[] RCON = {
+		0x00000000,
+		0x01000000,
+		0x02000000,
+		0x04000000,
+		0x08000000,
+		0x10000000,
+		0x20000000,
+		0x40000000,
+		0x80000000,
+		0x1B000000,
+		0x36000000
+	};
+
+
 	/**
 	* Computes the byte substitution step of an AES round.
 	*
@@ -154,7 +169,33 @@ public class AESOperationsHardVersion {
 		// Then initialize the first 4 columns with the keyMatrix.  Then iterate over the columns
 		// computing the rest per the AES key expansion rules.  Finally return the new array.
 
-		return;
+		// Initialize first 4 columns
+		int[] expandedKeyMatrix = new int[44];
 
+		for (int i = 0; i < 4; i++) {
+			expandedKeyMatrix[i] = keyMatrix[i];
+		}
+
+		// Fill remaining 40 columns
+		for (int i = 4; i < 44; i++) {
+			if (i % 4 != 0) {
+				expandedKeyMatrix[i] = expandedKeyMatrix[i-4] ^ expandedKeyMatrix[i-1];
+			} else {
+				int tFunctionInt = expandedKeyMatrix[i-1];
+				
+				int b0 = S_BOX[(tFunctionInt >>> 16) & 0xFF] & 0xFF; // Original second byte
+				int b1 = S_BOX[(tFunctionInt >>>  8) & 0xFF] & 0xFF; // Original third byte
+				int b2 = S_BOX[(tFunctionInt)        & 0xFF] & 0xFF; // Original fourth byte
+				int b3 = S_BOX[(tFunctionInt >>> 24) & 0xFF] & 0xFF; // Original first byte
+
+				tFunctionInt = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3; // Recombine into int
+				tFunctionInt ^= RCON[i / 4]; // Round constant operation
+				
+				expandedKeyMatrix[i] = expandedKeyMatrix[i-4] ^ tFunctionInt;
+			}
+		}
+
+		return expandedKeyMatrix;
+		
 	}
 }
