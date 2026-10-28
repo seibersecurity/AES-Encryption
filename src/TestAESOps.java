@@ -12,6 +12,7 @@ public class TestAESOps {
         }
     }
 
+	// Encrypts 128-bit plaintext using AES with 128-bit key size
 	public static int[] encrypt(byte[] plaintext, byte[] key) {
 		int[] expandedKey = AESOperationsHardVersion.keyExpansion(
                 AESOperationsHardVersion.generateKeyMatrixFromKey(key));
@@ -53,26 +54,64 @@ public class TestAESOps {
 		// then in the String that is the first parameter, you'd have formatting requirements for each as follows:
 		// System.out.printf("%02x %02x %02x %02x\n", value1, value2, value3, value4);
 
-		byte[] plaintext = {
+		// Random Example
+		byte[] plaintext1 = {
 			(byte) 0x4D, (byte) 0x65, (byte) 0x65, (byte) 0x74,   // M e e t
 			(byte) 0x20, (byte) 0x6D, (byte) 0x65, (byte) 0x20,   // (space) m e (space)
 			(byte) 0x61, (byte) 0x74, (byte) 0x20, (byte) 0x6E,   // a t (space) n
 			(byte) 0x6F, (byte) 0x6F, (byte) 0x6E, (byte) 0x2E    // o o n .
 		};
 
-		byte[] key = {
+		byte[] key1 = {
 			(byte) 0x00, (byte) 0x01, (byte) 0x02, (byte) 0x03,
 			(byte) 0x04, (byte) 0x05, (byte) 0x06, (byte) 0x07,
 			(byte) 0x08, (byte) 0x09, (byte) 0x0A, (byte) 0x0B,
 			(byte) 0x0C, (byte) 0x0D, (byte) 0x0E, (byte) 0x0F
 		};
 
-		int[] ciphertext = encrypt(plaintext, key);
+		// Homework 6 AES Example
+		byte[] plaintext2 = {
+			(byte) 0x12, (byte) 0xAE, (byte) 0x34, (byte) 0xA1,
+			(byte) 0x32, (byte) 0xB1, (byte) 0x54, (byte) 0x50,
+			(byte) 0x34, (byte) 0x00, (byte) 0x65, (byte) 0x10,
+			(byte) 0x54, (byte) 0x21, (byte) 0x01, (byte) 0x12
+		};
 
-		System.out.println("Plaintext:  " + new String(plaintext));
+		byte[] key2 = {
+			(byte) 0x08, (byte) 0x10, (byte) 0x35, (byte) 0xA6,
+			(byte) 0x32, (byte) 0xA1, (byte) 0x74, (byte) 0x40,
+			(byte) 0x64, (byte) 0x00, (byte) 0x25, (byte) 0x10,
+			(byte) 0x46, (byte) 0xE1, (byte) 0x35, (byte) 0x13
+		};
+
+		int[] ciphertext1 = encrypt(plaintext1, key1);
+		int[] ciphertext2 = encrypt(plaintext2, key2);
+
+
+		System.out.println("Plaintext:  " + new String(plaintext1));
+		System.out.print("Plaintext:  ");
+		for (int col : plaintext1) {
+			System.out.printf("%02X", col);
+		}
+
+		System.out.println();
 		System.out.print("Ciphertext: ");
-		for (int col : ciphertext) {
+		for (int col : ciphertext1) {
 			System.out.printf("%08X", col);
 		}
+
+		System.out.println();
+		System.out.println("Plaintext:  " + new String(plaintext2));
+		System.out.print("Plaintext:  ");
+		for (int col : plaintext2) {
+			System.out.printf("%02X", col);
+		}
+
+		System.out.println();
+		System.out.print("Ciphertext: ");
+		for (int col : ciphertext2) {
+			System.out.printf("%08X", col);
+		}
+
 	}
 }
